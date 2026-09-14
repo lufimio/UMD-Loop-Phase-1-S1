@@ -1,8 +1,15 @@
 services:
-  firefox:
+  ros2-gazebo:
     build: .
     environment:
-      - XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR}
-      - WAYLAND_DISPLAY=${WAYLAND_DISPLAY}
+      DISPLAY: ${DISPLAY:-:0}
+      QT_QPA_PLATFORM: xcb
+      XDG_SESSION_TYPE: x11
+      XDG_RUNTIME_DIR: /tmp/runtime-root
+      QT_X11_NO_MITSHM: "1"
+      GZ_SIM_RENDER_ENGINE: ogre2
+      LIBGL_ALWAYS_INDIRECT: "0"
     volumes:
-      - ${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}:${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY}
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /dev/dri:/dev/dri
+

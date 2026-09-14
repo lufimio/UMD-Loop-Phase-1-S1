@@ -1,46 +1,73 @@
 FROM ubuntu:24.04
 
-ENV DEBIAN_FRONTEND=noninteractive
+SHELL [ "/bin/bash", "-c" ]
 
 # Install package dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        build-essential \
-        software-properties-common \
-        autoconf \
-        automake \
-        libtool \
-        pkg-config \
-        ca-certificates \
-        locales \
-        locales-all \
-        wget && \
-    apt-get clean
+  ca-certificates \
+  curl \
+  locales \
+  python3 \
+  python3-pip \
+  python3-venv \
+  software-properties-common \
+  qt6-wayland \
+  qtwayland5 \
+  libegl1 \
+  libegl-mesa0 \
+  libgl1 \
+  libgl1-mesa-dri \
+  libglx-mesa0 \
+  mesa-vulkan-drivers \
+  libglu1-mesa \
+  libx11-6 \
+  libx11-xcb1 \
+  libxcb-cursor0 \
+  libxcb-glx0 \
+  libxcb-icccm4 \
+  libxcb-image0 \
+  libxcb-keysyms1 \
+  libxcb-render-util0 \
+  libxcb-shape0 \
+  libxcb-xfixes0 \
+  libxcb-xkb1 \
+  libxext6 \
+  libxrandr2 \
+  libwayland-client0 \
+  x11-xserver-utils \
+  xauth && \
+  apt-get clean
 
 # System locale
 # Important for UTF-8
+RUN locale-gen en_US.UTF-8 && \
+  update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV LANGUAGE=en_US.UTF-8
+ENV XDG_RUNTIME_DIR=/tmp/runtime-root
+RUN mkdir -p /tmp/runtime-root && chmod 0700 /tmp/runtime-root
 
-# Install Firefox and its dependencies
-# https://support.mozilla.org/en-US/kb/install-firefox-linux
-# https://www.mozilla.org/en-US/firefox/117.0/system-requirements/
-RUN install -d -m 0755 /etc/apt/keyrings && \
-    wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null && \
-    gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,""); if($0 == "35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3") print "\nThe key fingerprint matches ("$0").\n"; else print "\nVerification failed: the fingerprint ("$0") does not match the expected one.\n"}' && \
-    echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null && \
-    echo 'Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000' | tee /etc/apt/preferences.d/mozilla && \
-    apt-get update && apt-get install -y --no-install-recommends \
-        libpci-dev \
-        libcanberra-gtk3-module \
-        libgles2-mesa-dev \
-        dbus-x11 \
-        firefox && \
-    apt-get clean
+RUN add-apt-repository universe
 
-# Install fonts
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        fonts-wqy-microhei && \
-    apt-get clean
+RUN export ROS_APT_SOURCE_VERSION=$(curl -s https://api.github.com/repos/ros-infrastructure/ros-apt-source/releases/latest | \
+  grep -F "tag_name" | awk -F'"' '{print $4}') && \
+  curl -L -o /tmp/ros2-apt-source.deb \
+  "https://github.com/ros-infrastructure/ros-apt-source/releases/download/${ROS_APT_SOURCE_VERSION}/ros2-apt-source_${ROS_APT_SOURCE_VERSION}.$(\
+  . /etc/os-release && echo ${UBUNTU_CODENAME:-${VERSION_CODENAME}}\
+  )_all.deb" && \
+  dpkg -i /tmp/ros2-apt-source.deb
 
-CMD ["firefox"]
+RUN apt-get -y update && \
+  apt-get upgrade -y && \
+  apt-get -y install \
+  python3-colcon-common-extensions \
+  ros-jazzy-desktop \
+  ros-jazzy-ros-gz \
+  ros-jazzy-ros-ign-bridge
+
+RUN echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc && \
+  echo "export QT_QPA_PLATFORM=xcb" >> ~/.bashrc && \
+  echo "unset WAYLAND_DISPLAY" >> ~/.bashrc
+
+CMD ["bash", "-lic", "gz sim shapes.sdf"]
