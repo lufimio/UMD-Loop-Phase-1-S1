@@ -1,6 +1,8 @@
 FROM ubuntu:24.04
 
-SHELL [ "/bin/bash", "-c" ]
+ARG ROS_DISTRO=jazzy
+
+SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
 # Install package dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -62,12 +64,31 @@ RUN apt-get -y update && \
   apt-get upgrade -y && \
   apt-get -y install \
   python3-colcon-common-extensions \
-  ros-jazzy-desktop \
-  ros-jazzy-ros-gz \
-  ros-jazzy-ros-ign-bridge
+  python3-colcon-mixin \
+  python3-rosdep \
+  python3-vcstool \
+  ros-${ROS_DISTRO}-desktop \
+  ros-${ROS_DISTRO}-ros-gz \
+  ros-${ROS_DISTRO}-joint-state-publisher
+
+RUN rosdep init && \
+  rosdep update --rosdistro $ROS_DISTRO
+
+RUN colcon mixin add default \
+  https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml && \
+  colcon mixin update && \
+  colcon metadata add default \
+  https://raw.githubusercontent.com/colcon/colcon-metadata-repository/master/index.yaml && \
+  colcon metadata update
 
 RUN echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc && \
   echo "export QT_QPA_PLATFORM=xcb" >> ~/.bashrc && \
   echo "unset WAYLAND_DISPLAY" >> ~/.bashrc
 
-CMD ["bash", "-lic", "gz sim shapes.sdf"]
+COPY ./startup.bash /root/simulation/startup.bash
+COPY ./src /root/simulation/src
+
+WORKDIR /root/simulation/
+RUN colcon build --packages-select autonomous_robot
+
+CMD [ "bash", "-l", "/root/simulation/startup.bash" ]
