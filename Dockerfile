@@ -69,7 +69,8 @@ RUN apt-get -y update && \
   python3-vcstool \
   ros-${ROS_DISTRO}-desktop \
   ros-${ROS_DISTRO}-ros-gz \
-  ros-${ROS_DISTRO}-joint-state-publisher
+  ros-${ROS_DISTRO}-joint-state-publisher \
+  ros-${ROS_DISTRO}-tf-transformations
 
 RUN rosdep init && \
   rosdep update --rosdistro $ROS_DISTRO
@@ -89,6 +90,9 @@ COPY ./startup.bash /root/simulation/startup.bash
 COPY ./src /root/simulation/src
 
 WORKDIR /root/simulation/
-RUN colcon build --packages-select autonomous_robot
+RUN rosdep install -i --from-path src --rosdistro ${ROS_DISTRO} -y && \
+  colcon build --packages-select autonomous_robot
+
+RUN echo "source /root/simulation/install/setup.bash" >> ~/.bashrc
 
 CMD [ "bash", "-l", "/root/simulation/startup.bash" ]
