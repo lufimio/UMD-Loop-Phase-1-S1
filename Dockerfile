@@ -90,8 +90,9 @@ COPY ./startup.bash /root/simulation/startup.bash
 COPY ./src /root/simulation/src
 
 WORKDIR /root/simulation/
-RUN rosdep install -i --from-path src --rosdistro ${ROS_DISTRO} -y && \
-  colcon build --packages-select autonomous_robot
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
+  rosdep install -i --from-path src --rosdistro ${ROS_DISTRO} -y && \
+  colcon build
 
 RUN echo "source /root/simulation/install/setup.bash" >> ~/.bashrc
 

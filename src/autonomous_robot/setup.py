@@ -27,6 +27,8 @@ setup(
         ],
     },
     entry_points={
-        "console_scripts": ["publisher = autonomous_robot.test:main"],
+        "console_scripts": [
+            "controller = autonomous_robot.controller:main",
+        ],
     },
 )
