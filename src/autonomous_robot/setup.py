@@ -30,6 +30,7 @@ setup(
         "console_scripts": [
             "controller = autonomous_robot.controller:main",
             "spawner = autonomous_robot.spawner:main",
+            "robot = autonomous_robot.robot:main",
         ],
     },
 )

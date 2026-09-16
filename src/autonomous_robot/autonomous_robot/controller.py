@@ -38,12 +38,14 @@ class ControllerNode(Node):
     def initObstacles(self, count):
         self.obstacles = Obstacles()
         offsets = [
-            (0.2, 2.1),
-            (1.7, 0.0),
-            (0.9, -2.3),
-            (2.6, 2.3),
-            (-2.3, 0.9),
-            (-2.1, -1.9),
+            (2.0, 0.0),
+            (3.0, 2.3),
+            (2.8, -2.7),
+            (0.9, -4.6),
+            (-0.9, 2.9),
+            (-0.8, -1.9),
+            (-3.6, 0.9),
+            (-3.6, -3.3),
         ]
 
         for x, y in offsets:
@@ -63,7 +65,7 @@ class ControllerNode(Node):
 
     def initWaypoints(self, count, clearance=0.8):
         self.waypoints = Waypoints()
-        x_min, x_max, y_min, y_max = -3.0, 3.0, -3.0, 3.0
+        x_min, x_max, y_min, y_max = -4.0, 5.0, -4.0, 4.0
 
         def obstacle_radius(obstacle):
             return max(obstacle.size.x, obstacle.size.y) / 2.0
@@ -86,6 +88,9 @@ class ControllerNode(Node):
             y = random.uniform(y_min, y_max)
 
             if min_distance_to_obstacles(x, y) <= clearance:
+                continue
+
+            if (x * x) + (y * y) <= 1.3:
                 continue
 
             if any(

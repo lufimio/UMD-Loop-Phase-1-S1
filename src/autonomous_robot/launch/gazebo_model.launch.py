@@ -24,7 +24,7 @@ def generate_launch_description():
     gazebo_launch = IncludeLaunchDescription(
         gazbo_rosPackageLaunch,
         launch_arguments={
-            "gz_args": "-r -v -v4 empty.sdf",
+            "gz_args": "-v -v4 empty.sdf",
             "on_exit_shutdown": "true",
         }.items(),
     )
@@ -57,7 +57,10 @@ def generate_launch_description():
     spawn_service_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
-        arguments=["/world/empty/create@ros_gz_interfaces/srv/SpawnEntity"],
+        arguments=[
+            "/world/empty/create@ros_gz_interfaces/srv/SpawnEntity",
+            "/world/empty/dynamic_pose/info@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V",
+        ],
         output="screen",
     )
 
@@ -73,6 +76,12 @@ def generate_launch_description():
         output="screen",
     )
 
+    robot_node = Node(
+        package="autonomous_robot",
+        executable="robot",
+        output="screen",
+    )
+
     launchDescriptionObject = LaunchDescription()
     launchDescriptionObject.add_action(gazebo_launch)
     launchDescriptionObject.add_action(spawnModelNodeGazebo)
@@ -81,5 +90,6 @@ def generate_launch_description():
     launchDescriptionObject.add_action(spawn_service_bridge)
     launchDescriptionObject.add_action(controller_node)
     launchDescriptionObject.add_action(spawner_node)
+    launchDescriptionObject.add_action(robot_node)
 
     return launchDescriptionObject

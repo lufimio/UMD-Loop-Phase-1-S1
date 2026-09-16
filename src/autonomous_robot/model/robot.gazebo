@@ -8,14 +8,14 @@
   </gazebo>
 
   <gazebo reference="wheel1_link">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
+    <mu1>2.0</mu1>
+    <mu2>2.0</mu2>
     <material>Gazebo/Yellow</material>
   </gazebo>
 
   <gazebo reference="wheel2_link">
-    <mu1>0.2</mu1>
-    <mu2>0.2</mu2>
+    <mu1>2.0</mu1>
+    <mu2>2.0</mu2>
     <material>Gazebo/Yellow</material>
   </gazebo>
 
