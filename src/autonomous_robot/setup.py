@@ -29,6 +29,7 @@ setup(
     entry_points={
         "console_scripts": [
             "controller = autonomous_robot.controller:main",
+            "spawner = autonomous_robot.spawner:main",
         ],
     },
 )

@@ -54,10 +54,32 @@ def generate_launch_description():
         output="screen",
     )
 
+    spawn_service_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        arguments=["/world/empty/create@ros_gz_interfaces/srv/SpawnEntity"],
+        output="screen",
+    )
+
+    controller_node = Node(
+        package="autonomous_robot",
+        executable="controller",
+        output="screen",
+    )
+
+    spawner_node = Node(
+        package="autonomous_robot",
+        executable="spawner",
+        output="screen",
+    )
+
     launchDescriptionObject = LaunchDescription()
     launchDescriptionObject.add_action(gazebo_launch)
     launchDescriptionObject.add_action(spawnModelNodeGazebo)
     launchDescriptionObject.add_action(nodeRobotStatePublisher)
     launchDescriptionObject.add_action(start_gazebo_ros_bridge_cmd)
+    launchDescriptionObject.add_action(spawn_service_bridge)
+    launchDescriptionObject.add_action(controller_node)
+    launchDescriptionObject.add_action(spawner_node)
 
     return launchDescriptionObject

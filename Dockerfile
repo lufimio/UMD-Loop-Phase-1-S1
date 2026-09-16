@@ -96,4 +96,4 @@ RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
 
 RUN echo "source /root/simulation/install/setup.bash" >> ~/.bashrc
 
-CMD [ "bash", "-l", "/root/simulation/startup.bash" ]
+CMD [ "bash", "-lic", "ros2 launch autonomous_robot gazebo_model.launch.py"]

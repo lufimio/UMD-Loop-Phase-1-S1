@@ -17,6 +17,8 @@
   <depend>ros_gz</depend>
   <depend>ros_gz_sim</depend>
   <depend>ros_gz_bridge</depend>
+  <depend>ros_gz_interfaces</depend>
+  <depend>custom_interfaces</depend>
   <depend>xacro</depend>
   <depend>rclpy</depend>
   <depend>geometry_msgs</depend>

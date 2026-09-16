@@ -38,27 +38,32 @@ class ControllerNode(Node):
     def initObstacles(self, count):
         self.obstacles = Obstacles()
         offsets = [
-            (1.5, 0.0),
-            (1.0, 1.2),
-            (2.0, -0.9),
+            (0.2, 2.1),
+            (1.7, 0.0),
+            (0.9, -2.3),
+            (2.6, 2.3),
+            (-2.3, 0.9),
+            (-2.1, -1.9),
         ]
 
         for x, y in offsets:
+            height = random.uniform(0.5, 0.8)
             obstacle = Obstacle()
             obstacle.pose.position.x = x
             obstacle.pose.position.y = y
+            obstacle.pose.position.z = height / 2
             obstacle.pose.orientation.w = 1.0
             obstacle.size.x = random.uniform(0.4, 0.6)
             obstacle.size.y = random.uniform(0.4, 0.6)
-            obstacle.size.z = random.uniform(0.5, 0.8)
+            obstacle.size.z = height
             self.get_logger().info(
                 f"Generated Obstacle: {x}, {y} {obstacle.size.x}x{obstacle.size.y}"
             )
             self.obstacles.obstacles.append(obstacle)
 
-    def initWaypoints(self, count, bounds=(-1.0, 4.0, -2.0, 2.0), clearance=0.8):
+    def initWaypoints(self, count, clearance=0.8):
         self.waypoints = Waypoints()
-        x_min, x_max, y_min, y_max = bounds
+        x_min, x_max, y_min, y_max = -3.0, 3.0, -3.0, 3.0
 
         def obstacle_radius(obstacle):
             return max(obstacle.size.x, obstacle.size.y) / 2.0
@@ -91,8 +96,9 @@ class ControllerNode(Node):
 
             self.get_logger().info(f"Generated Point: {x}, {y}")
             point = Point()
-            point.x = x
-            point.y = y
+            point.x = float(x)
+            point.y = float(y)
+            point.z = 0.0
             self.waypoints.waypoints.append(point)
 
 
